@@ -1,0 +1,1 @@
+cat createBDD.sql | ./sqlite/sqlite3.exe
