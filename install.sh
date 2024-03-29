@@ -1,5 +1,3 @@
-echo '{"mails":[],"users":[]}' > PINGUMAIL.json
-
 sudo apt update -y
 sudo apt upgrade -y
 
@@ -17,6 +15,8 @@ echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
 export PATH=$PATH:/usr/local/go/bin
 
 go version
+
+echo '{"mails":[],"users":[]}' > PINGUMAIL.json
 
 go build .
 
