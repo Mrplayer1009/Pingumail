@@ -57,6 +57,7 @@ func init() {
 func Start() {
 
 	println("Mails loaded from file:", jsonBDD.Mails)
+	println("Account loaded from file:", jsonBDD.USers)
 
 	http.HandleFunc("/mail", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
