@@ -66,7 +66,7 @@ func Start() {
 		case http.MethodPost:
 			var mail Mail
 			if err := json.NewDecoder(r.Body).Decode(&mail); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				http.Error(w, "Status Bad Request", http.StatusBadRequest)
 				return
 			}
 
@@ -85,7 +85,7 @@ func Start() {
 			fmt.Printf("Sending mail from to %s\n", mail.To)
 
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			http.Error(w, "Status Method Not Allowed", http.StatusMethodNotAllowed)
 		}
 	})
 

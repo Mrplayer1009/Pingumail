@@ -1,1 +1,1 @@
-touch PINGUMAIL.json
+echo '{"mails":[],"users":[]}' > PINGUMAIL.json

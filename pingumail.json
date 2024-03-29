@@ -17,6 +17,18 @@
             "from": "hugo",
             "to": "mathis",
             "body": "Nouveau mail"
+        },
+        {
+            "id": 3,
+            "from": "",
+            "to": "",
+            "body": ""
+        },
+        {
+            "id": 4,
+            "from": "hugo",
+            "to": "mathis",
+            "body": "encore un mail"
         }
     ],
     "users": [

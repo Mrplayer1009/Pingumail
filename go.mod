@@ -1,4 +1,4 @@
-module pingumail.com/v0
+module pingumail
 
 go 1.21.4
 

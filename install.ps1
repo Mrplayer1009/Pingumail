@@ -1,1 +1,1 @@
-Write-Output "" > PINGUMAIL.json
+Write-Output . > pingumail.json
