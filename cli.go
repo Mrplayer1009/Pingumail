@@ -7,6 +7,8 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/urfave/cli/v2" // imports as package "cli"
+
+	"golang.org/x/term"
 )
 
 func CliStart() {
@@ -118,56 +120,70 @@ func CliStart() {
 			},
 		},
 		{
-			Name:  "env",
-			Usage: "Manage the environment variables",
+			Name:    "user",
+			Aliases: []string{"u"},
+			Usage:   "Manage the users",
 			Subcommands: []*cli.Command{
 				{
-					Name:    "show",
-					Usage:   "Show the environment variables",
-					Aliases: []string{"s"},
+					Name:    "add",
+					Usage:   "Add a user",
+					Aliases: []string{"a"},
 					Action: func(c *cli.Context) error {
 
-						envMap, _ := godotenv.Read(".env")
+						println("Adding user...")
+						if c.NArg() != 1 {
+							println("Usage: pingumail user add <username>")
+							return nil
+						}
+						var userName = c.Args().Get(0)
 
-						println("Showing environment variables...")
-						println("Username", envMap["pinguUserName"])
-						println("Pingumail IP", envMap["pinguServerIP"])
-						println("Pingumail version", envMap["pingVersion"])
+						println("Enter password:")
+						password, err := term.ReadPassword(int(os.Stdin.Fd()))
+						if err != nil {
+							println("Error reading password")
+							return nil
+						}
+
+						server.AddUser(userName, string(password))
 						return nil
 					},
 				},
 				{
-					Name:    "modify",
-					Usage:   "Modify some environment variables",
-					Aliases: []string{"m"},
-					Flags: []cli.Flag{
-						&cli.StringFlag{
-							Name:  "var",
-							Usage: "environment variable to modify",
-						},
-						&cli.StringFlag{
-							Name:  "value",
-							Usage: "new value of the environment variable",
-						},
-					},
+					Name:    "remove",
+					Usage:   "Remove a user",
+					Aliases: []string{"r"},
 					Action: func(c *cli.Context) error {
-
-						v := c.String("var")
-						val := c.String("value")
-
-						err := os.Setenv(v, val)
-						if err != nil {
-							println("Error setting environment variable", v, ":", val)
-						}
-
-						envList, _ := godotenv.Read(".env")
-						envList[v] = val
-
-						godotenv.Write(envList, ".env")
-						_ = godotenv.Load(".env")
+						println("Removing user...")
+						// RemoveUser()
 						return nil
 					},
 				},
+				{
+					Name:    "show",
+					Usage:   "Show the users",
+					Aliases: []string{"s"},
+					Action: func(c *cli.Context) error {
+						println("Showing users...")
+						// ShowUser()
+						return nil
+					},
+				},
+			},
+		},
+		{
+			Name:    "login",
+			Usage:   "Login as a user",
+			Aliases: []string{"l"},
+			Action: func(c *cli.Context) error {
+				println("Logging in...")
+
+				if c.NArg() != 1 {
+					println("Usage: pingumail login <username>")
+					return nil
+				}
+
+				server.Login(c.Args().Get(0))
+				return nil
 			},
 		},
 	}

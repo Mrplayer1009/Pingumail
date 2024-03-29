@@ -1,1 +1,6 @@
-{"mails":[{"id":0,"from":"hugo","to":"mathis","body":"le mail","read":true},{"id":1,"from":"hugo","to":"mathis","body":"test de user","read":false}],"users":[{"id":1,"name":"mathis"}]}
+{
+    "mails": [
+    ],
+    "users": [
+    ]
+}
