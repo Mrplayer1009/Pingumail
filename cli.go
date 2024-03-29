@@ -4,6 +4,7 @@ import (
 	"client"
 	"os"
 	"server"
+	"strings"
 
 	"github.com/urfave/cli/v2" // imports as package "cli"
 
@@ -181,11 +182,19 @@ func CliStart() {
 					return nil
 				}
 
-				server.Login(c.Args().Get(0))
+				token := client.Login(c.Args().Get(0))
+				if token != "" {
+					envVar := []byte(strings.Join([]string{
+						"pinguServerIP=" + os.Getenv("pinguServerIP"),
+						"pinguVersion=" + os.Getenv("pinguVersion"),
+						"pinguToken=" + token,
+					}, "\n"))
+
+					os.WriteFile(".env", envVar, 0644)
+				}
+
 				return nil
 			},
 		},
 	}
-	app.RunAndExitOnError()
-
 }
