@@ -133,6 +133,9 @@ func Start() {
 			for _, u := range jsonBDD.USers {
 				if u.Name == user.Name {
 					err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(user.Password))
+
+					json.NewEncoder(w).Encode(u.Name)
+
 					if err == nil {
 						fmt.Println("Login successful")
 						json.NewEncoder(w).Encode(u.Token)
