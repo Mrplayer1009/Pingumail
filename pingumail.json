@@ -1,1 +1,13 @@
-{"mails":[{"id":0,"from":"hugo","to":"mathis","body":"le mail","read":true}],"users":[{"id":1,"name":"John Doe"}]}
+{
+    "mails": [
+        {
+            "id": 0,
+            "from": "hugo",
+            "to": "mathis",
+            "body": "le mail",
+            "read": true
+        }
+    ],
+    "users": [
+    ]
+}
