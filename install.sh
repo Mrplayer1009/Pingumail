@@ -12,3 +12,7 @@ echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
 export PATH=$PATH:/usr/local/go/bin
 
 go version
+
+go build .
+
+export PATH=$PATH:$PWD
