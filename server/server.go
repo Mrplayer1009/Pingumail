@@ -8,7 +8,6 @@ import (
 
 	"os"
 
-	"github.com/joho/godotenv"
 	"golang.org/x/crypto/bcrypt"
 	_ "golang.org/x/term"
 )
@@ -57,10 +56,11 @@ func init() {
 
 func Start() {
 
-	godotenv.Load("server.conf")
-	jsonPath = os.Getenv("bddPath")
+	os.Setenv("bddPath", "/usr/local/Pingumail/pingumail.json")
 
-	fmt.Println("Path to mails.json:", jsonPath)
+	jsonPath = "/usr/local/Pingumail/pingumail.json"
+
+	fmt.Println("Path to mails.json:", jsonPath, os.Getenv("bddPath"))
 	println("Mails loaded from file:", jsonBDD.Mails)
 	println("Account loaded from file:", jsonBDD.USers)
 
