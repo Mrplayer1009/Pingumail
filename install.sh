@@ -6,8 +6,14 @@ sudo apt upgrade -y
 wd=$(pwd)
 
 mkdir /usr/local/Pingumail
-cd /usr/local/Pingumail
 
+# if there is no Pingumail folder where the user is
+if [ ! -d "/usr/local/Pingumail" ]; then
+    cd ..
+fi
+
+mv Pingumail /usr/local/Pingumail
+cd /usr/local/Pingumail
 
 sudo apt install -y wget
 wget https://go.dev/dl/go1.22.1.linux-amd64.tar.gz
