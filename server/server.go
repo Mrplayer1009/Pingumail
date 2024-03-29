@@ -20,6 +20,7 @@ type Mail struct {
 	From string `json:"from"`
 	To   string `json:"to"`
 	Body string `json:"body"`
+	Read bool   `json:"read"`
 }
 
 type User struct {
@@ -55,13 +56,26 @@ func Start() {
 		switch r.Method {
 		case http.MethodGet:
 
+			var mails []Mail
+			var backupMail []Mail
+
 			for _, mail := range jsonBDD.Mails {
-				if mail.To == currentUser {
-					fmt.Printf("Mail from %s: %s\n", mail.From, mail.Body)
+				if mail.To == currentUser && !mail.Read {
+					mail.Read = true
+					mails = append(mails, mail)
 				}
+				backupMail = append(backupMail, mail)
 			}
 
-			// json.NewEncoder(w).Encode(filterMailsByCurrentUser())
+			jsonBDD.Mails = backupMail
+
+			jsonData, err := json.Marshal(jsonBDD)
+			handleErr(err, "Error marshaling mails to JSON")
+
+			err = ioutil.WriteFile(jsonPath, jsonData, 0644)
+			handleErr(err, "Error writing mails to file")
+
+			json.NewEncoder(w).Encode(mails)
 
 		case http.MethodPost:
 			var mail Mail
@@ -71,6 +85,7 @@ func Start() {
 			}
 
 			mail.ID = len(jsonBDD.Mails)
+			mail.Read = false
 
 			jsonBDD.Mails = append(jsonBDD.Mails, mail)
 			json.NewEncoder(w).Encode(mail)

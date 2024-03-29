@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/joho/godotenv"
 )
 
 type Mail struct {
@@ -13,6 +15,7 @@ type Mail struct {
 	From string `json:"from"`
 	To   string `json:"to"`
 	Body string `json:"body"`
+	Read bool   `json:"read"`
 }
 
 const server = "http://localhost:80/mail"
@@ -45,4 +48,25 @@ func SendMail(from string, to string, body string) {
 	handleErr(err, "Error reading response body")
 
 	fmt.Println("Response:", string(responseBody))
+}
+
+func Reload() []Mail {
+	err := godotenv.Load(".env")
+	handleErr(err, "Error loading .env file")
+
+	req, err := http.NewRequest("GET", server, nil)
+	handleErr(err, "Error creating request")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	handleErr(err, "Error making request")
+	defer resp.Body.Close()
+
+	responseBody, err := ioutil.ReadAll(resp.Body)
+	handleErr(err, "Error reading response body")
+
+	var mails []Mail
+	json.Unmarshal(responseBody, &mails)
+
+	return mails
 }

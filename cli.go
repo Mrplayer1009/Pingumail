@@ -2,6 +2,7 @@ package main
 
 import (
 	"client"
+	"os"
 	"server"
 
 	"github.com/urfave/cli/v2" // imports as package "cli"
@@ -29,7 +30,15 @@ func CliStart() {
 			Usage:   "Reload the unread mails",
 			Action: func(c *cli.Context) error {
 				println("Reloading unread mails...")
-				// Reload()
+				mails := client.Reload()
+
+				var username = os.Getenv("pinguUserName")
+
+				for _, mail := range mails {
+					if mail.To == username {
+						println("From", mail.From, ":", mail.Body)
+					}
+				}
 				return nil
 			},
 		},
