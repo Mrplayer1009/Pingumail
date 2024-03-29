@@ -12,7 +12,7 @@ import (
 	_ "golang.org/x/term"
 )
 
-const jsonPath = "pingumail.json"
+var jsonPath = os.Getenv("pinguMailPath")
 
 type BDD struct {
 	Mails []Mail `json:"mails"`
