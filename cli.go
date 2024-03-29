@@ -5,6 +5,7 @@ import (
 	"os"
 	"server"
 
+	"github.com/joho/godotenv"
 	"github.com/urfave/cli/v2" // imports as package "cli"
 )
 
@@ -47,11 +48,6 @@ func CliStart() {
 			Aliases: []string{"s", "mail", "m"},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
-					Name:    "f",
-					Aliases: []string{"from"},
-					Usage:   "Sender of the mail",
-				},
-				&cli.StringFlag{
 					Name:    "t",
 					Aliases: []string{"to"},
 					Usage:   "Receiver of the mail",
@@ -67,40 +63,11 @@ func CliStart() {
 
 				println("Sending mail...")
 
-				from := c.String("from")
 				to := c.String("to")
 				body := c.String("body")
 
-				client.SendMail(from, to, body)
+				client.SendMail(to, body)
 
-				return nil
-			},
-		},
-		{
-			Name:    "history",
-			Aliases: []string{"hist"},
-			Usage:   "Show the history of mails",
-			Action: func(c *cli.Context) error {
-				println("Showing mail history...")
-				// History()
-				return nil
-			},
-		},
-		{
-			Name:  "stop",
-			Usage: "Stop the mail server",
-			Action: func(c *cli.Context) error {
-				println("Stopping mail server...")
-				// Stop()
-				return nil
-			},
-		},
-		{
-			Name:  "status",
-			Usage: "Show the status of the mail server",
-			Action: func(c *cli.Context) error {
-				println("Showing mail server status...")
-				// Status()
 				return nil
 			},
 		},
@@ -109,8 +76,7 @@ func CliStart() {
 			Aliases: []string{"ver", "v"},
 			Usage:   "Show the version of the mail server",
 			Action: func(c *cli.Context) error {
-				println("Showing mail server version...")
-				// Version()
+				println("Pingumail Version :", os.Getenv("pinguVersion"))
 				return nil
 			},
 		},
@@ -156,32 +122,49 @@ func CliStart() {
 			Usage: "Manage the environment variables",
 			Subcommands: []*cli.Command{
 				{
-					Name:    "add",
-					Usage:   "Add an environment variable",
-					Aliases: []string{"a"},
-					Action: func(c *cli.Context) error {
-						println("Adding environment variable...")
-						// AddEnv()
-						return nil
-					},
-				},
-				{
-					Name:    "remove",
-					Usage:   "Remove an environment variable",
-					Aliases: []string{"r"},
-					Action: func(c *cli.Context) error {
-						println("Removing environment variable...")
-						// RemoveEnv()
-						return nil
-					},
-				},
-				{
 					Name:    "show",
 					Usage:   "Show the environment variables",
 					Aliases: []string{"s"},
 					Action: func(c *cli.Context) error {
+
+						envMap, _ := godotenv.Read(".env")
+
 						println("Showing environment variables...")
-						// ShowEnv()
+						println("Username", envMap["pinguUserName"])
+						println("Pingumail IP", envMap["pinguServerIP"])
+						println("Pingumail version", envMap["pingVersion"])
+						return nil
+					},
+				},
+				{
+					Name:    "modify",
+					Usage:   "Modify some environment variables",
+					Aliases: []string{"m"},
+					Flags: []cli.Flag{
+						&cli.StringFlag{
+							Name:  "var",
+							Usage: "environment variable to modify",
+						},
+						&cli.StringFlag{
+							Name:  "value",
+							Usage: "new value of the environment variable",
+						},
+					},
+					Action: func(c *cli.Context) error {
+
+						v := c.String("var")
+						val := c.String("value")
+
+						err := os.Setenv(v, val)
+						if err != nil {
+							println("Error setting environment variable", v, ":", val)
+						}
+
+						envList, _ := godotenv.Read(".env")
+						envList[v] = val
+
+						godotenv.Write(envList, ".env")
+						_ = godotenv.Load(".env")
 						return nil
 					},
 				},

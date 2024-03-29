@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/joho/godotenv"
 )
@@ -18,7 +19,10 @@ type Mail struct {
 	Read bool   `json:"read"`
 }
 
-const server = "http://localhost:80/mail"
+type User struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
 
 func handleErr(err error, reason string) {
 	if err != nil {
@@ -26,17 +30,10 @@ func handleErr(err error, reason string) {
 	}
 }
 
-func SendMail(from string, to string, body string) {
-	var mail = Mail{
-		From: from,
-		To:   to,
-		Body: body,
-	}
-
-	bodyRequest, err := json.Marshal(mail) // Replace with your custom body
-	handleErr(err, "Error marshalling body")
-
-	req, err := http.NewRequest("POST", server, bytes.NewBuffer(bodyRequest))
+func CheckUserExists(to string) bool {
+	_ = godotenv.Load(".env")
+	var server = fmt.Sprintf("http://%s:80/", os.Getenv("pinguServerIP"))
+	req, err := http.NewRequest("GET", server+"user", nil)
 	handleErr(err, "Error creating request")
 
 	client := &http.Client{}
@@ -44,15 +41,53 @@ func SendMail(from string, to string, body string) {
 	handleErr(err, "Error making request")
 	defer resp.Body.Close()
 
+	// parse the response body and loop thought it to check if user exist
 	responseBody, err := ioutil.ReadAll(resp.Body)
 	handleErr(err, "Error reading response body")
 
-	fmt.Println("Response:", string(responseBody))
+	var users []User
+	json.Unmarshal(responseBody, &users)
+
+	for _, user := range users {
+		if user.Name == to {
+			return true
+		}
+	}
+
+	return false
+}
+
+func SendMail(to string, body string) {
+	_ = godotenv.Load(".env")
+	var server = fmt.Sprintf("http://%s:80/", os.Getenv("pinguServerIP"))
+
+	if !CheckUserExists(to) {
+		fmt.Println("User does not exist")
+		return
+	}
+
+	var mail = Mail{
+		From: os.Getenv("pinguUserName"),
+		To:   to,
+		Body: body,
+	}
+
+	bodyRequest, err := json.Marshal(mail) // Replace with your custom body
+	handleErr(err, "Error marshalling body")
+
+	req, err := http.NewRequest("POST", server+"mail", bytes.NewBuffer(bodyRequest))
+	handleErr(err, "Error creating request")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	handleErr(err, "Error making request")
+	defer resp.Body.Close()
 }
 
 func Reload() []Mail {
 	err := godotenv.Load(".env")
 	handleErr(err, "Error loading .env file")
+	var server = fmt.Sprintf("http://%s:80/mail", os.Getenv("pinguServerIP"))
 
 	req, err := http.NewRequest("GET", server, nil)
 	handleErr(err, "Error creating request")

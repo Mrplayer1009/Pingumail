@@ -104,6 +104,15 @@ func Start() {
 		}
 	})
 
+	http.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			json.NewEncoder(w).Encode(jsonBDD.USers)
+		default:
+			http.Error(w, "Status Method Not Allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
 	fmt.Println("Server started on port 80 (HTTP)")
 	if err := http.ListenAndServe(":80", nil); err != nil {
 		fmt.Println(err)
