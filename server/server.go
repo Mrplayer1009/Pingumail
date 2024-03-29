@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	
+	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/term"
+	"os"
 )
 
 const jsonPath = "pingumail.json"
@@ -26,6 +30,7 @@ type Mail struct {
 type User struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
+	Password string `json:"password"`
 }
 
 // Set content of mails to the content of mails.json
@@ -108,5 +113,64 @@ func Start() {
 	if err := http.ListenAndServe(":80", nil); err != nil {
 		fmt.Println(err)
 	}
+
+}
+
+func AddUser(name string, password string) {
+	var user User
+	user.ID = len(jsonBDD.USers) + 1
+	user.Name = name
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println("Error hashing password")
+		return
+	}
+	user.Password = string(hash)
+
+	// if the user already exists
+	for _, u := range jsonBDD.USers {
+		if u.Name == name {
+			fmt.Printf("User %s already exists\n", name)
+			return
+		}
+	}
+
+	jsonBDD.USers = append(jsonBDD.USers, user)
+
+	jsonData, err := json.Marshal(jsonBDD)
+	handleErr(err, "Error marshaling mails to JSON")
+
+	err = ioutil.WriteFile(jsonPath, jsonData, 0644)
+	handleErr(err, "Error writing mails to file")
+
+	fmt.Printf("User %s added\n", name)
+}
+
+func Login(userName string) {
+
+	var user User
+	user.Name = userName
+
+	fmt.Println("Enter password: ")
+	password, err := term.ReadPassword(int(os.Stdin.Fd()))
+	if err != nil {
+		println("Error reading password")
+		return
+	}
+
+	for _, u := range jsonBDD.USers {
+		if u.Name == user.Name {
+			err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+			if err != nil {
+				fmt.Println("Login failed")
+				return
+			}
+			fmt.Println("Login successful")
+
+			return
+		}
+	}
+
+	fmt.Println("Login failed")
 
 }

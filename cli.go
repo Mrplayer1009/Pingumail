@@ -6,6 +6,8 @@ import (
 	"server"
 
 	"github.com/urfave/cli/v2" // imports as package "cli"
+
+	"golang.org/x/term"
 )
 
 func CliStart() {
@@ -77,34 +79,6 @@ func CliStart() {
 			},
 		},
 		{
-			Name:    "history",
-			Aliases: []string{"hist"},
-			Usage:   "Show the history of mails",
-			Action: func(c *cli.Context) error {
-				println("Showing mail history...")
-				// History()
-				return nil
-			},
-		},
-		{
-			Name:  "stop",
-			Usage: "Stop the mail server",
-			Action: func(c *cli.Context) error {
-				println("Stopping mail server...")
-				// Stop()
-				return nil
-			},
-		},
-		{
-			Name:  "status",
-			Usage: "Show the status of the mail server",
-			Action: func(c *cli.Context) error {
-				println("Showing mail server status...")
-				// Status()
-				return nil
-			},
-		},
-		{
 			Name:    "version",
 			Aliases: []string{"ver", "v"},
 			Usage:   "Show the version of the mail server",
@@ -152,39 +126,70 @@ func CliStart() {
 			},
 		},
 		{
-			Name:  "env",
-			Usage: "Manage the environment variables",
+			Name:    "user",
+			Aliases: []string{"u"},
+			Usage:   "Manage the users",
 			Subcommands: []*cli.Command{
 				{
 					Name:    "add",
-					Usage:   "Add an environment variable",
+					Usage:   "Add a user",
 					Aliases: []string{"a"},
 					Action: func(c *cli.Context) error {
-						println("Adding environment variable...")
-						// AddEnv()
+
+						println("Adding user...")
+						if c.NArg() != 1 {
+							println("Usage: pingumail user add <username>")
+							return nil
+						}
+						var userName = c.Args().Get(0)
+
+						println("Enter password:")
+						password, err := term.ReadPassword(int(os.Stdin.Fd()))
+						if err != nil {
+							println("Error reading password")
+							return nil
+						}
+
+						server.AddUser(userName, string(password))
 						return nil
 					},
 				},
 				{
 					Name:    "remove",
-					Usage:   "Remove an environment variable",
+					Usage:   "Remove a user",
 					Aliases: []string{"r"},
 					Action: func(c *cli.Context) error {
-						println("Removing environment variable...")
-						// RemoveEnv()
+						println("Removing user...")
+						// RemoveUser()
 						return nil
 					},
 				},
 				{
 					Name:    "show",
-					Usage:   "Show the environment variables",
+					Usage:   "Show the users",
 					Aliases: []string{"s"},
 					Action: func(c *cli.Context) error {
-						println("Showing environment variables...")
-						// ShowEnv()
+						println("Showing users...")
+						// ShowUser()
 						return nil
 					},
 				},
+			},
+		},
+		{
+			Name:    "login",
+			Usage:   "Login as a user",
+			Aliases: []string{"l"},
+			Action: func(c *cli.Context) error {
+				println("Logging in...")
+
+				if c.NArg() != 1 {
+					println("Usage: pingumail login <username>")
+					return nil
+				}
+
+				server.Login(c.Args().Get(0))
+				return nil
 			},
 		},
 	}
