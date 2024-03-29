@@ -12,7 +12,7 @@ if [ ! -d "/usr/local/Pingumail" ]; then
     cd ..
 fi
 
-mv Pingumail /usr/local/Pingumail
+mv Pingumail /usr/local
 cd /usr/local/Pingumail
 
 sudo apt install -y wget
