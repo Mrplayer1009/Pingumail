@@ -5,6 +5,7 @@ sudo apt upgrade -y
 
 wd=$(pwd)
 
+rm -rf /usr/local/Pingumail
 mkdir /usr/local/Pingumail
 
 # if there is no Pingumail folder where the user is
