@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	
-	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/term"
+
 	"os"
+
+	"golang.org/x/crypto/bcrypt"
+	_ "golang.org/x/term"
 )
 
 const jsonPath = "pingumail.json"
-const currentUser = "mathis"
 
 type BDD struct {
 	Mails []Mail `json:"mails"`
@@ -28,9 +28,10 @@ type Mail struct {
 }
 
 type User struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
 	Password string `json:"password"`
+	Token    string `json:"token"`
 }
 
 // Set content of mails to the content of mails.json
@@ -65,7 +66,7 @@ func Start() {
 			var backupMail []Mail
 
 			for _, mail := range jsonBDD.Mails {
-				if mail.To == currentUser && !mail.Read {
+				if mail.To == os.Getenv("pinguUserName") && !mail.Read {
 					mail.Read = true
 					mails = append(mails, mail)
 				}
@@ -118,11 +119,40 @@ func Start() {
 		}
 	})
 
+	http.HandleFunc("/login", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+
+			// Read the username from the request and the password
+			var user User
+			if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
+				http.Error(w, "Status Bad Request", http.StatusBadRequest)
+				return
+			}
+
+			for _, u := range jsonBDD.USers {
+				if u.Name == user.Name {
+					err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(user.Password))
+					if err != nil {
+						fmt.Println("Login failed")
+						return
+					}
+					fmt.Println("Login successful")
+
+					json.NewEncoder(w).Encode(u.Token)
+					return
+				}
+			}
+
+		default:
+			http.Error(w, "Status Method Not Allowed", http.StatusMethodNotAllowed)
+		}
+	})
+
 	fmt.Println("Server started on port 80 (HTTP)")
 	if err := http.ListenAndServe(":80", nil); err != nil {
 		fmt.Println(err)
 	}
-
 }
 
 func AddUser(name string, password string) {
@@ -153,33 +183,4 @@ func AddUser(name string, password string) {
 	handleErr(err, "Error writing mails to file")
 
 	fmt.Printf("User %s added\n", name)
-}
-
-func Login(userName string) {
-
-	var user User
-	user.Name = userName
-
-	fmt.Println("Enter password: ")
-	password, err := term.ReadPassword(int(os.Stdin.Fd()))
-	if err != nil {
-		println("Error reading password")
-		return
-	}
-
-	for _, u := range jsonBDD.USers {
-		if u.Name == user.Name {
-			err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
-			if err != nil {
-				fmt.Println("Login failed")
-				return
-			}
-			fmt.Println("Login successful")
-
-			return
-		}
-	}
-
-	fmt.Println("Login failed")
-
 }

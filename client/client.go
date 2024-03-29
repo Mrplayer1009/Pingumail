@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"golang.org/x/term"
 )
 
 type Mail struct {
@@ -20,8 +21,10 @@ type Mail struct {
 }
 
 type User struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
+	ID       int    `json:"id"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
+	Token    string `json:"token"`
 }
 
 func handleErr(err error, reason string) {
@@ -104,4 +107,42 @@ func Reload() []Mail {
 	json.Unmarshal(responseBody, &mails)
 
 	return mails
+}
+
+func Login(userName string) string {
+
+	var user User
+	user.Name = userName
+
+	fmt.Println("Enter password: ")
+	password, err := term.ReadPassword(int(os.Stdin.Fd()))
+	if err != nil {
+		println("Error reading password")
+		return ""
+	}
+
+	user.Password = string(password)
+
+	// Make an HTTP request to the server to login
+	_ = godotenv.Load(".env")
+	var server = fmt.Sprintf("http://%s:80/", os.Getenv("pinguServerIP"))
+
+	bodyRequest, err := json.Marshal(user)
+	handleErr(err, "Error marshalling body")
+
+	req, err := http.NewRequest("POST", server+"login", bytes.NewBuffer(bodyRequest))
+	handleErr(err, "Error creating request")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	handleErr(err, "Error making request")
+	defer resp.Body.Close()
+
+	responseBody, err := ioutil.ReadAll(resp.Body)
+	handleErr(err, "Error reading response body")
+
+	var userResp User
+	json.Unmarshal(responseBody, &userResp)
+
+	return userResp.Token
 }
