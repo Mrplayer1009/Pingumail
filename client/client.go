@@ -18,7 +18,7 @@ type Mail struct {
 	Read bool   `json:"read"`
 }
 
-const server = "http://localhost:80/mail"
+const server = "http://92.222.216.38:80/mail"
 
 func handleErr(err error, reason string) {
 	if err != nil {
