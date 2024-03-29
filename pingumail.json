@@ -1,6 +1,1 @@
-{
-    "mails": [   
-    ],
-    "users": [
-    ]
-}
+{"mails":[],"users":[{"id":1,"name":"root","password":"$2a$10$B8VeyttflNjD658QUsZQ.uQ9ghdWTJqjqiytBVLNTE6C4uwUF5mIe"}]}
