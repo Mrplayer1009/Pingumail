@@ -1,1 +1,0 @@
-Write-Output '{"mails":[],"users":[]}' > PINGUMAIL.json
