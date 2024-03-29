@@ -2,18 +2,15 @@ package server
 
 import (
 	"encoding/json"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"io/ioutil"
 	"net/http"
 )
 
-var jsonPath = "pingumail.json"
-
-type BDD struct {
-	Mails []Mail `json:"mails"`
-	Users []User `json:"users"`
+func sendResponse(w http.ResponseWriter, status int, body string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	w.Write([]byte(body))
 }
 
 type Mail struct {
@@ -21,23 +18,17 @@ type Mail struct {
 	Body string `json:"body"`
 }
 
-type User struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 // Set content of mails to the content of mails.json
-var jsonBDD BDD
+var mails []Mail
 
 func init() {
-	content, err := ioutil.ReadFile(jsonPath)
+	content, err := ioutil.ReadFile("pingumail.json")
 	if err != nil {
 		fmt.Println("Error reading mails from file:", err)
 		return
 	}
 
-	err = json.Unmarshal(content, &jsonBDD.Mails)
+	err = json.Unmarshal(content, &mails)
 	if err != nil {
 		fmt.Println("Error unmarshaling mails from JSON:", err)
 		return
@@ -46,38 +37,42 @@ func init() {
 
 func Start() {
 
-	println("Mails loaded from file:", jsonBDD.Mails)
+	println("Mails loaded from file:", mails)
 
 	http.HandleFunc("/mail", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			json.NewEncoder(w).Encode(jsonBDD.Mails)
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(mails)
 		case http.MethodPost:
 			var mail Mail
 			if err := json.NewDecoder(r.Body).Decode(&mail); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				sendResponse(w, http.StatusBadRequest, "Invalid request body")
 				return
 			}
-			mail.ID = len(jsonBDD.Mails)
+			mail.ID = len(mails)
 
-			jsonBDD.Mails = append(jsonBDD.Mails, mail)
+			mails = append(mails, mail)
 			json.NewEncoder(w).Encode(mail)
 
-			// Write jsonBDD.Mails to JSON file
-			jsonData, err := json.Marshal(jsonBDD)
+			// Write mails to JSON file
+			jsonData, err := json.Marshal(mails)
 			if err != nil {
 				fmt.Println("Error marshaling mails to JSON:", err)
+				sendResponse(w, http.StatusInternalServerError, "Internal server error")
 				return
 			}
 
-			err = ioutil.WriteFile(jsonPath, jsonData, 0644)
+			err = ioutil.WriteFile("pingumail.json", jsonData, 0644)
 			if err != nil {
 				fmt.Println("Error writing mails to file:", err)
+				sendResponse(w, http.StatusInternalServerError, "Internal server error")
 				return
 			}
 
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			sendResponse(w, http.StatusMethodNotAllowed, "Method not allowed")
 		}
 	})
 
@@ -87,4 +82,3 @@ func Start() {
 	}
 
 }
-
