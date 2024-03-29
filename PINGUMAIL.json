@@ -1,18 +1,28 @@
-[
-    {
-        "id": 0,
-        "body": "Ca marche ?"
-    },
-    {
-        "id": 1,
-        "body": "Oh !"
-    },
-    {
-        "id": 2,
-        "body": "Enfin"
-    },
-    {
-        "id": 3,
-        "body": "Nouveau mail"
-    }
-]
+{
+    "mails": [
+        {
+            "id": 0,
+            "from": "John Doe",
+            "to": "Jane Doe",
+            "body": "Hello, Jane!"
+        },
+        {
+            "id": 1,
+            "from": "Jane Doe",
+            "to": "John Doe",
+            "body": "Hello, John!"
+        },
+        {
+            "id": 2,
+            "from": "hugo",
+            "to": "mathis",
+            "body": "Nouveau mail"
+        }
+    ],
+    "users": [
+        {
+            "id": 1,
+            "name": "John Doe"
+        }
+    ]
+}
