@@ -5,7 +5,6 @@ import (
 	"os"
 	"server"
 
-	"github.com/joho/godotenv"
 	"github.com/urfave/cli/v2" // imports as package "cli"
 
 	"golang.org/x/term"
