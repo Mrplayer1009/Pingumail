@@ -14,7 +14,8 @@ mkdir /usr/local/Pingumail
 mv Pingumail /usr/local
 cd /usr/local/Pingumail
 
-if [! -d "/usr/local/go" ]; then # if there is no go folder
+ # if there is no go folder
+if [ ! -d "/usr/local/go" ]; then
 
     sudo apt install -y wget
     wget https://go.dev/dl/go1.22.1.linux-amd64.tar.gz
