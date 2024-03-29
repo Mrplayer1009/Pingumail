@@ -3,7 +3,10 @@
 sudo apt update -y
 sudo apt upgrade -y
 
-$wd = $(pwd)
+#save the current working directory
+wd=$(pwd)
+
+# test if the working directory is well saved
 echo $wd
 
 # mkdir /usr/local/Pingumail
