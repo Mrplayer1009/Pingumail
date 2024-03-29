@@ -183,6 +183,7 @@ func CliStart() {
 				}
 
 				token := client.Login(c.Args().Get(0))
+				println("Token:", token)
 				if token != "" {
 					envVar := []byte(strings.Join([]string{
 						"pinguServerIP=" + os.Getenv("pinguServerIP"),
@@ -191,6 +192,8 @@ func CliStart() {
 					}, "\n"))
 
 					os.WriteFile(".env", envVar, 0644)
+				} else {
+					println("Login failed")
 				}
 
 				return nil
