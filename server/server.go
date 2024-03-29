@@ -7,6 +7,12 @@ import (
 	"net/http"
 )
 
+func sendResponse(w http.ResponseWriter, status int, body string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	w.Write([]byte(body))
+}
+
 type Mail struct {
 	ID   int    `json:"id"`
 	Body string `json:"body"`
@@ -36,11 +42,13 @@ func Start() {
 	http.HandleFunc("/mail", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(mails)
 		case http.MethodPost:
 			var mail Mail
 			if err := json.NewDecoder(r.Body).Decode(&mail); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				sendResponse(w, http.StatusBadRequest, "Invalid request body")
 				return
 			}
 			mail.ID = len(mails)
@@ -52,17 +60,19 @@ func Start() {
 			jsonData, err := json.Marshal(mails)
 			if err != nil {
 				fmt.Println("Error marshaling mails to JSON:", err)
+				sendResponse(w, http.StatusInternalServerError, "Internal server error")
 				return
 			}
 
 			err = ioutil.WriteFile("pingumail.json", jsonData, 0644)
 			if err != nil {
 				fmt.Println("Error writing mails to file:", err)
+				sendResponse(w, http.StatusInternalServerError, "Internal server error")
 				return
 			}
 
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			sendResponse(w, http.StatusMethodNotAllowed, "Method not allowed")
 		}
 	})
 
