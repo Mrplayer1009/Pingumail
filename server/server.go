@@ -131,7 +131,7 @@ func Start() {
 			}
 
 			test, _ := json.Marshal(user)
-			json.NewEncoder(w).Encode(test)
+			json.NewEncoder(w).Encode(string(test))
 
 			for _, u := range jsonBDD.USers {
 				if u.Name == user.Name {
