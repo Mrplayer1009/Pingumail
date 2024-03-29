@@ -58,7 +58,7 @@ func init() {
 func Start() {
 
 	godotenv.Load(".conf")
-	jsonPath = os.Getenv("pinguServerPath")
+	jsonPath = os.Getenv("bddPath")
 
 	fmt.Println("Path to mails.json:", jsonPath)
 	println("Mails loaded from file:", jsonBDD.Mails)
