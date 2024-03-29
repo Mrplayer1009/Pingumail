@@ -1,1 +1,1 @@
-cat createBDD.sql | ./sqlite/sqlite3.exe
+Write-Output '{"mails":[],"users":[]}' > PINGUMAIL.json
