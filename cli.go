@@ -49,11 +49,6 @@ func CliStart() {
 			Aliases: []string{"s", "mail", "m"},
 			Flags: []cli.Flag{
 				&cli.StringFlag{
-					Name:    "f",
-					Aliases: []string{"from"},
-					Usage:   "Sender of the mail",
-				},
-				&cli.StringFlag{
 					Name:    "t",
 					Aliases: []string{"to"},
 					Usage:   "Receiver of the mail",
@@ -69,11 +64,10 @@ func CliStart() {
 
 				println("Sending mail...")
 
-				from := c.String("from")
 				to := c.String("to")
 				body := c.String("body")
 
-				client.SendMail(from, to, body)
+				client.SendMail(to, body)
 
 				return nil
 			},
@@ -83,8 +77,7 @@ func CliStart() {
 			Aliases: []string{"ver", "v"},
 			Usage:   "Show the version of the mail server",
 			Action: func(c *cli.Context) error {
-				println("Showing mail server version...")
-				// Version()
+				println("Pingumail Version :", os.Getenv("pinguVersion"))
 				return nil
 			},
 		},
