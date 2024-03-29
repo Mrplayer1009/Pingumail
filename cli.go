@@ -197,4 +197,6 @@ func CliStart() {
 			},
 		},
 	}
+
+	app.RunAndExitOnError()
 }
