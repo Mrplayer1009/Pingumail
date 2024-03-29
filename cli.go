@@ -1,6 +1,10 @@
-package server
+package main
 
 import (
+	"client"
+	"os"
+	"server"
+
 	"github.com/urfave/cli/v2" // imports as package "cli"
 )
 
@@ -11,29 +15,71 @@ func CliStart() {
 	app.Usage = "A simple mail server"
 	app.Commands = []*cli.Command{
 		{
-			Name:  "start",
+			Name:    "start",
 			Aliases: []string{"run", "up"},
-			Usage: "Start the mail server",
+			Usage:   "Start the mail server",
 			Action: func(c *cli.Context) error {
 				println("Starting mail server...")
-				Start()
+				server.Start()
 				return nil
 			},
 		},
 		{
-			Name:  "reload",
+			Name:    "reload",
 			Aliases: []string{"r"},
-			Usage: "Reload the unread mails",
+			Usage:   "Reload the unread mails",
 			Action: func(c *cli.Context) error {
 				println("Reloading unread mails...")
-				// Reload()
+				mails := client.Reload()
+
+				var username = os.Getenv("pinguUserName")
+
+				for _, mail := range mails {
+					if mail.To == username {
+						println("From", mail.From, ":", mail.Body)
+					}
+				}
 				return nil
 			},
 		},
 		{
-			Name:  "history",
+			Name:    "send",
+			Aliases: []string{"s", "mail", "m"},
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:    "f",
+					Aliases: []string{"from"},
+					Usage:   "Sender of the mail",
+				},
+				&cli.StringFlag{
+					Name:    "t",
+					Aliases: []string{"to"},
+					Usage:   "Receiver of the mail",
+				},
+				&cli.StringFlag{
+					Name:    "b",
+					Aliases: []string{"body"},
+					Usage:   "Body of the mail",
+				},
+			},
+			Usage: "Send a mail",
+			Action: func(c *cli.Context) error {
+
+				println("Sending mail...")
+
+				from := c.String("from")
+				to := c.String("to")
+				body := c.String("body")
+
+				client.SendMail(from, to, body)
+
+				return nil
+			},
+		},
+		{
+			Name:    "history",
 			Aliases: []string{"hist"},
-			Usage: "Show the history of mails",
+			Usage:   "Show the history of mails",
 			Action: func(c *cli.Context) error {
 				println("Showing mail history...")
 				// History()
@@ -59,9 +105,9 @@ func CliStart() {
 			},
 		},
 		{
-			Name:  "version",
+			Name:    "version",
 			Aliases: []string{"ver", "v"},
-			Usage: "Show the version of the mail server",
+			Usage:   "Show the version of the mail server",
 			Action: func(c *cli.Context) error {
 				println("Showing mail server version...")
 				// Version()
@@ -69,13 +115,13 @@ func CliStart() {
 			},
 		},
 		{
-			Name:  "config",
+			Name:    "config",
 			Aliases: []string{"conf"},
-			Usage: "Manage the mail server configuration",
+			Usage:   "Manage the mail server configuration",
 			Subcommands: []*cli.Command{
 				{
-					Name:  "add",
-					Usage: "Add a configuration",
+					Name:    "add",
+					Usage:   "Add a configuration",
 					Aliases: []string{"a"},
 					Action: func(c *cli.Context) error {
 						println("Adding configuration...")
@@ -84,8 +130,8 @@ func CliStart() {
 					},
 				},
 				{
-					Name:  "remove",
-					Usage: "Remove a configuration",
+					Name:    "remove",
+					Usage:   "Remove a configuration",
 					Aliases: []string{"r"},
 					Action: func(c *cli.Context) error {
 						println("Removing configuration...")
@@ -94,8 +140,8 @@ func CliStart() {
 					},
 				},
 				{
-					Name:  "show",
-					Usage: "Show the configurations",
+					Name:    "show",
+					Usage:   "Show the configurations",
 					Aliases: []string{"s"},
 					Action: func(c *cli.Context) error {
 						println("Showing configurations...")
@@ -110,8 +156,8 @@ func CliStart() {
 			Usage: "Manage the environment variables",
 			Subcommands: []*cli.Command{
 				{
-					Name:  "add",
-					Usage: "Add an environment variable",
+					Name:    "add",
+					Usage:   "Add an environment variable",
 					Aliases: []string{"a"},
 					Action: func(c *cli.Context) error {
 						println("Adding environment variable...")
@@ -120,8 +166,8 @@ func CliStart() {
 					},
 				},
 				{
-					Name:  "remove",
-					Usage: "Remove an environment variable",
+					Name:    "remove",
+					Usage:   "Remove an environment variable",
 					Aliases: []string{"r"},
 					Action: func(c *cli.Context) error {
 						println("Removing environment variable...")
@@ -130,8 +176,8 @@ func CliStart() {
 					},
 				},
 				{
-					Name:  "show",
-					Usage: "Show the environment variables",
+					Name:    "show",
+					Usage:   "Show the environment variables",
 					Aliases: []string{"s"},
 					Action: func(c *cli.Context) error {
 						println("Showing environment variables...")

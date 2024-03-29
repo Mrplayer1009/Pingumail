@@ -1,18 +1,1 @@
-[
-    {
-        "id": 0,
-        "body": "Ca marche ?"
-    },
-    {
-        "id": 1,
-        "body": "Oh !"
-    },
-    {
-        "id": 2,
-        "body": "Enfin"
-    },
-    {
-        "id": 3,
-        "body": "Nouveau mail"
-    }
-]
+{"mails":[{"id":0,"from":"hugo","to":"mathis","body":"le mail","read":true}],"users":[{"id":1,"name":"John Doe"}]}
