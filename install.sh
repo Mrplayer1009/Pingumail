@@ -26,6 +26,9 @@ echo 'export PATH=$PATH:/usr/local/Pingumail' >> ~/.bashrc
 
 source ~/.bashrc
 
+export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:/usr/local/Pingumail
+
 go version
 
 echo '{"mails":[],"users":[]}' > PINGUMAIL.json
