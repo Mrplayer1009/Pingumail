@@ -22,6 +22,8 @@ go version
 
 echo '{"mails":[],"users":[]}' > PINGUMAIL.json
 
+pwd
+
 go build .
 
 export PATH=$PATH:/usr/local/Pingumail
