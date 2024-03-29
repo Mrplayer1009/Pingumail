@@ -3,7 +3,7 @@
 sudo apt update -y
 sudo apt upgrade -y
 
-wd = $PWD
+wd = $(pwd)
 echo $wd
 
 # mkdir /usr/local/Pingumail
