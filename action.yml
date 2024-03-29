@@ -1,0 +1,8 @@
+- name: SSH Remote Commands
+  uses: appleboy/ssh-action@v1.0.3
+  with:
+    host: 92.222.216.38:80
+    username: smiath
+    password: Respons11!
+
+  command: cd ~ && sudo bash install.sh
