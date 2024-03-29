@@ -44,6 +44,10 @@ func handleErr(err error, reason string) {
 }
 
 func init() {
+	os.Setenv("bddPath", "/usr/local/Pingumail/pingumail.json")
+
+	jsonPath = os.Getenv("bddPath")
+
 	content, err := ioutil.ReadFile(jsonPath)
 	handleErr(err, "reading mails from file")
 
@@ -58,9 +62,9 @@ func Start() {
 
 	os.Setenv("bddPath", "/usr/local/Pingumail/pingumail.json")
 
-	jsonPath = "/usr/local/Pingumail/pingumail.json"
+	jsonPath = os.Getenv("bddPath")
 
-	fmt.Println("Path to mails.json:", jsonPath, os.Getenv("bddPath"))
+	fmt.Println("Path to mails.json:", jsonPath)
 	println("Mails loaded from file:", jsonBDD.Mails)
 	println("Account loaded from file:", jsonBDD.USers)
 
