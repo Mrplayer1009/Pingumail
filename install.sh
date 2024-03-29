@@ -23,15 +23,13 @@ rm go1.22.1.linux-amd64.tar.gz
 
 echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.bashrc
 export PATH=$PATH:/usr/local/go/bin
+export PATH=$PATH:/usr/local/Pingumail
 
 go version
 
 echo '{"mails":[],"users":[]}' > PINGUMAIL.json
 
-pwd
-
 go build .
 
-export PATH=$PATH:/usr/local/Pingumail
 
 cd $wd
