@@ -191,7 +191,7 @@ func CliStart() {
 						"pinguToken=" + token,
 					}, "\n"))
 
-					os.WriteFile(".env", envVar, 0644)
+					os.WriteFile("client.env", envVar, 0644)
 				} else {
 					println("Login failed")
 				}

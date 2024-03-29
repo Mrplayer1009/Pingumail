@@ -34,7 +34,7 @@ func handleErr(err error, reason string) {
 }
 
 func CheckUserExists(to string) bool {
-	_ = godotenv.Load(".env")
+	_ = godotenv.Load("client.env")
 	var server = fmt.Sprintf("http://%s:80/", os.Getenv("pinguServerIP"))
 	req, err := http.NewRequest("GET", server+"user", nil)
 	handleErr(err, "Error creating request")
@@ -61,7 +61,7 @@ func CheckUserExists(to string) bool {
 }
 
 func SendMail(to string, body string) {
-	_ = godotenv.Load(".env")
+	_ = godotenv.Load("client.env")
 	var server = fmt.Sprintf("http://%s:80/", os.Getenv("pinguServerIP"))
 
 	if !CheckUserExists(to) {
@@ -88,7 +88,7 @@ func SendMail(to string, body string) {
 }
 
 func Reload() []Mail {
-	err := godotenv.Load(".env")
+	err := godotenv.Load("client.env")
 	handleErr(err, "Error loading .env file")
 	var server = fmt.Sprintf("http://%s:80/mail", os.Getenv("pinguServerIP"))
 
@@ -124,7 +124,7 @@ func Login(userName string) string {
 	user.Password = string(password)
 
 	// Make an HTTP request to the server to login
-	_ = godotenv.Load(".env")
+	_ = godotenv.Load("client.env")
 	var server = fmt.Sprintf("http://%s:80/", os.Getenv("pinguServerIP"))
 
 	bodyRequest, err := json.Marshal(user)

@@ -57,7 +57,7 @@ func init() {
 
 func Start() {
 
-	godotenv.Load(".conf")
+	godotenv.Load("server.conf")
 	jsonPath = os.Getenv("bddPath")
 
 	fmt.Println("Path to mails.json:", jsonPath)
