@@ -130,10 +130,8 @@ func Start() {
 				return
 			}
 
-			test, _ := json.Marshal(user)
-			json.NewEncoder(w).Encode(string(test))
-
 			for _, u := range jsonBDD.USers {
+				json.NewEncoder(w).Encode(u.Name + " " + user.Name)
 				if u.Name == user.Name {
 					err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(user.Password))
 
