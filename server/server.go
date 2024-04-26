@@ -76,7 +76,7 @@ func Start() {
 			var backupMail []Mail
 
 			for _, mail := range jsonBDD.Mails {
-				if mail.To == os.Getenv("pinguUserName") && !mail.Read {
+				if !mail.Read {
 					mail.Read = true
 					mails = append(mails, mail)
 				}
