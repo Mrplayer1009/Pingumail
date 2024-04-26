@@ -83,7 +83,7 @@ func Start() {
 				backupMail = append(backupMail, mail)
 			}
 
-			jsonBDD.Mails = backupMail
+			// jsonBDD.Mails = backupMail
 
 			jsonData, err := json.Marshal(jsonBDD)
 			handleErr(err, "Error marshaling mails to JSON")
