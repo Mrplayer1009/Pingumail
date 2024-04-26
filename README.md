@@ -1,6 +1,7 @@
 # Pingumail
 
 Pingumail is a simple email sending service that allows you to send emails easily using a RESTful API.
+Pingumail is a service that work on linux CLI
 
 ## Features
 
